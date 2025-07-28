@@ -1,72 +1,88 @@
 import { Star, MessageCircle, Calendar, User } from "lucide-react";
 import { useState, useEffect } from "react";
+import axios from "axios";
+
+let baseUrl = 'https://insight-iq-backend.onrender.com/api/v1'
 
 const Mentors = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [hoveredCard, setHoveredCard] = useState(null);
+  const [mentors, setMentors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
+    const fetchMentors = async () => {
+      try {
+        const response = await axios.get(`${baseUrl}/mentors`);
+        if (response.data.success) {
+          const formattedMentors = response.data.data.map(mentor => ({
+            id: mentor._id,
+            name: mentor.fullName,
+            expertise: mentor.additionalDetails?.areaOfExpertise?.[0]?.tech_name || "Mentor",
+            rating: 4.8, // Default rating
+            reviews: Math.floor(Math.random() * 100) + 50, // Random reviews count
+            sessions: Math.floor(Math.random() * 400) + 100, // Random sessions count
+            image: mentor.additionalDetails?.image || "",
+            tags: mentor.additionalDetails?.areaOfExpertise?.[0]?.tags?.map(tag => tag.tag_name) || [],
+            description: mentor.additionalDetails?.description || 
+              `${mentor.fullName} is a mentor specializing in ${mentor.additionalDetails?.areaOfExpertise?.[0]?.tech_name || 'various technologies'}.`
+          }));
+          setMentors(formattedMentors);
+        }
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching mentors:", err);
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchMentors();
     setIsVisible(true);
   }, []);
 
-  const mentors = [
-    {
-      id: 1,
-      name: "Rupesh Singh",
-      expertise: "Full Stack Developer",
-      rating: 4.9,
-      reviews: 128,
-      sessions: 450,
-      image: "",
-      tags: ["React", "Node.js", "Full Stack"],
-      description: "Senior developer with 8+ years experience in modern web technologies",
-    },
-    {
-      id: 2,
-      name: "Nitish Kumar",
-      expertise: "Machine Learning Engineer",
-      rating: 4.8,
-      reviews: 95,
-      sessions: 300,
-      image: "",
-      tags: ["Python", "TensorFlow", "AI"],
-      description: "ML expert specializing in deep learning and neural networks",
-    },
-    {
-      id: 3,
-      name: "hjvhjvjhblkj",
-      expertise: "UI/UX Design Lead",
-      rating: 4.7,
-      reviews: 110,
-      sessions: 350,
-      image: "",
-      tags: ["Figma", "Sketch", "Adobe XD"],
-      description: "Design lead with expertise in user-centered design principles",
-    },
-  ];
+
+
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-slate-900 to-black">
+        <div className="text-white text-xl">Loading mentors...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-slate-900 to-black">
+        <div className="text-red-500 text-xl">Error: {error}</div>
+      </div>
+    );
+  }
 
   return (
     <section className="relative py-12 sm:py-16 lg:py-20 xl:py-24 overflow-hidden">
       {/* Enhanced Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-slate-900 to-black">
         <div className="absolute inset-0 bg-black/20"></div>
-        
+
         {/* Animated background elements */}
-        <div 
+        <div
           className="absolute top-1/4 left-1/6 w-32 h-32 sm:w-48 sm:h-48 lg:w-64 lg:h-64 bg-purple-600/20 rounded-full mix-blend-multiply filter blur-xl"
           style={{
             animation: 'float 8s ease-in-out infinite'
           }}
         ></div>
-        <div 
+        <div
           className="absolute bottom-1/4 right-1/6 w-40 h-40 sm:w-56 sm:h-56 lg:w-72 lg:h-72 bg-cyan-600/20 rounded-full mix-blend-multiply filter blur-xl"
           style={{
             animation: 'float 10s ease-in-out infinite reverse'
           }}
         ></div>
-        
+
         {/* Grid pattern */}
-        <div 
+        <div
           className="absolute inset-0 opacity-10"
           style={{
             backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
@@ -77,10 +93,9 @@ const Mentors = () => {
 
       <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
-        <div 
-          className={`text-center mb-8 sm:mb-12 lg:mb-16 transition-all duration-1000 ${
-            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
-          }`}
+        <div
+          className={`text-center mb-8 sm:mb-12 lg:mb-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
+            }`}
         >
           <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-white mb-3 sm:mb-4 lg:mb-6">
             Meet Our Expert Mentors
@@ -95,11 +110,10 @@ const Mentors = () => {
           {mentors.map((mentor, index) => (
             <div
               key={mentor.id}
-              className={`group transition-all duration-700 ${
-                isVisible 
-                  ? 'opacity-100 translate-y-0' 
+              className={`group transition-all duration-700 ${isVisible
+                  ? 'opacity-100 translate-y-0'
                   : 'opacity-0 translate-y-12'
-              }`}
+                }`}
               style={{
                 transitionDelay: `${index * 200}ms`
               }}
@@ -107,7 +121,7 @@ const Mentors = () => {
               onMouseLeave={() => setHoveredCard(null)}
             >
               <div className="relative bg-white/10 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 border border-white/20 h-full flex flex-col transition-all duration-500 hover:bg-white/15 hover:border-white/30 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/20">
-                
+
                 {/* Mentor Profile */}
                 <div className="flex items-center mb-4 sm:mb-6">
                   <div className="relative">
@@ -122,9 +136,9 @@ const Mentors = () => {
                         <User className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                       </div>
                     )}
-                    
+
                   </div>
-                  
+
                   <div className="ml-3 sm:ml-4 flex-1">
                     <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-cyan-400 transition-all duration-300">
                       {mentor.name}
@@ -159,11 +173,10 @@ const Mentors = () => {
                   {mentor.tags.map((tag, tagIndex) => (
                     <span
                       key={tagIndex}
-                      className={`px-2 sm:px-3 py-1 bg-white/10 rounded-full text-xs sm:text-sm text-white/70 border border-white/10 transition-all duration-300 ${
-                        hoveredCard === mentor.id 
-                          ? 'bg-white/20 border-white/30 text-white' 
+                      className={`px-2 sm:px-3 py-1 bg-white/10 rounded-full text-xs sm:text-sm text-white/70 border border-white/10 transition-all duration-300 ${hoveredCard === mentor.id
+                          ? 'bg-white/20 border-white/30 text-white'
                           : ''
-                      }`}
+                        }`}
                       style={{
                         transitionDelay: `${tagIndex * 50}ms`
                       }}
@@ -183,14 +196,13 @@ const Mentors = () => {
         </div>
 
         {/* Call to Action */}
-        <div 
-          className={`text-center mt-8 sm:mt-12 lg:mt-16 transition-all duration-1000 ${
-            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-          }`}
+        <div
+          className={`text-center mt-8 sm:mt-12 lg:mt-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`}
           style={{ transitionDelay: '800ms' }}
         >
           <p className="text-white/60 text-xs sm:text-sm mb-4">
-            Can't find the right mentor? 
+            Can't find the right mentor?
             <button className="text-purple-400 hover:text-purple-300 underline ml-1 transition-colors duration-200">
               Browse all mentors
             </button>
@@ -202,7 +214,7 @@ const Mentors = () => {
       </div>
 
       {/* Custom Styles */}
-      <style jsx>{`
+      <style>{`
         @keyframes float {
           0%, 100% { 
             transform: translateY(0px) rotate(0deg); 
