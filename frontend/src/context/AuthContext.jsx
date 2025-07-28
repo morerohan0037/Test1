@@ -89,7 +89,7 @@ export const AuthProvider = ({ children }) => {
       signup, 
       login, 
       logout,
-      isAuthenticated: !!token 
+      isAuthenticated: !token 
     }}>
       {children}
     </AuthContext.Provider>
