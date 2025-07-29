@@ -1,17 +1,25 @@
-import { Facebook, Twitter, Instagram, Linkedin, Mail, ArrowRight } from 'lucide-react';
+import {
+  Instagram,
+  Mail,
+  Phone,
+  ArrowRight,
+  Youtube,
+  MessageCircle // Using as a placeholder icon for WhatsApp
+} from 'lucide-react';
 
 const Footer = () => {
   const socialLinks = [
-    { icon: Facebook, href: "#" },
-    { icon: Twitter, href: "#" },
-    { icon: Instagram, href: "#" },
-    { icon: Linkedin, href: "#" }
+    { icon: Instagram, href: "https://www.instagram.com/insi.iq?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" },
+    { icon: MessageCircle, href: "https://whatsapp.com/channel/0029VbB02Ow9hXFBWwNih01v" },
+    { icon: Mail, href: "mailto:insightiq4students@gmail.com" },
+    { icon: Phone, href: "tel:9026975729" },
+    { icon: Youtube, href: "https://youtube.com/@insight_iq-p2n?si=cgkWpy0OJ_mJocpH" }
   ];
 
   return (
     <footer className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
       <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:20px_20px]"></div>
-      
+
       <div className="relative container mx-auto px-4 py-12">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
@@ -23,9 +31,10 @@ const Footer = () => {
             <p className="text-gray-400 text-sm">
               Empowering learning through expert mentorship and guidance.
             </p>
-            <div className="flex space-x-4">
+            <div className="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
               {socialLinks.map((social, index) => (
                 <a
+                  target="_blank"
                   key={index}
                   href={social.href}
                   className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 transition-all duration-300 hover:scale-110 hover:text-cyan-400"
@@ -34,6 +43,7 @@ const Footer = () => {
                 </a>
               ))}
             </div>
+
           </div>
 
           {/* Quick Links */}

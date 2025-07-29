@@ -9,6 +9,7 @@ import PaymentPlans from './components/Plans/PaymentPlans';
 import Footer from './components/Footer';
 import Dashboard from './components/Dashboard';
 import PrivateRoute from './components/PrivateRoute';
+import SocialPalette from './components/SocialPalette';
 
 function App() {
   return (
@@ -33,7 +34,9 @@ function App() {
               />
             </Routes>
           </main>
+          <SocialPalette />
           <Footer />
+
         </div>
       </Router>
     </AuthProvider>
