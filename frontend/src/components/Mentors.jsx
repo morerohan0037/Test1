@@ -1,12 +1,10 @@
-import { Star, MessageCircle, Calendar, User } from "lucide-react";
-import { useState, useEffect } from "react";
+import { User } from "lucide-react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 
-let baseUrl = 'https://insight-iq-backend.onrender.com/api/v1'
+const baseUrl = "https://insight-iq-backend.onrender.com/api/v1";
 
 const Mentors = () => {
-  const [isVisible, setIsVisible] = useState(false);
-  const [hoveredCard, setHoveredCard] = useState(null);
   const [mentors, setMentors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,268 +12,174 @@ const Mentors = () => {
   useEffect(() => {
     const fetchMentors = async () => {
       try {
-        const response = await axios.get(`${baseUrl}/mentors`);
-        if (response.data.success) {
-          const formattedMentors = response.data.data.map(mentor => ({
-            id: mentor._id,
-            name: mentor.fullName,
-            expertise: mentor.additionalDetails?.areaOfExpertise?.[0]?.tech_name || "Mentor",
-            rating: 4.8, // Default rating
-            reviews: Math.floor(Math.random() * 100) + 50, // Random reviews count
-            sessions: Math.floor(Math.random() * 400) + 100, // Random sessions count
-            image: mentor.additionalDetails?.image || "",
-            tags: mentor.additionalDetails?.areaOfExpertise?.[0]?.tags?.map(tag => tag.tag_name) || [],
-            description: mentor.additionalDetails?.description || 
-              `${mentor.fullName} is a mentor specializing in ${mentor.additionalDetails?.areaOfExpertise?.[0]?.tech_name || 'various technologies'}.`
-          }));
-          setMentors(formattedMentors);
+        const res = await axios.get(`${baseUrl}/mentors`);
+        if (res.data.success) {
+          const formatted = res.data.data.map((mentor) => {
+            const expertise = mentor.additionalDetails?.areaOfExpertise?.[0];
+            return {
+              id: mentor._id,
+              name: mentor.fullName,
+              accountType: mentor.accountType || "Mentor",
+              image: mentor.additionalDetails?.image || "",
+              techName: expertise?.tech_name || "Not specified",
+              tags: expertise?.tags?.map((tag) => tag.tag_name) || [],
+              description:
+                mentor.additionalDetails?.description ||
+                `Hi! I'm ${mentor.fullName}, here to help you grow!`,
+            };
+          });
+          setMentors(formatted);
         }
         setLoading(false);
       } catch (err) {
-        console.error("Error fetching mentors:", err);
-        setError(err.message);
+        setError("Failed to fetch mentors.");
         setLoading(false);
       }
     };
 
     fetchMentors();
-    setIsVisible(true);
   }, []);
-
-
-
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-slate-900 to-black">
-        <div className="text-white text-xl">Loading mentors...</div>
+      <div className="min-h-screen flex justify-center items-center bg-gradient-to-br from-gray-900 via-slate-900 to-black">
+        <div className="text-center">
+          <div className="inline-block w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin mb-4"></div>
+          <p className="text-white text-lg font-medium">Loading mentors...</p>
+          <p className="text-white/60 text-sm mt-2">Please wait while we fetch our amazing mentors</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-slate-900 to-black">
-        <div className="text-red-500 text-xl">Error: {error}</div>
+      <div className="min-h-screen flex justify-center items-center bg-gradient-to-br from-gray-900 via-slate-900 to-black">
+        <div className="text-center max-w-md mx-auto p-8">
+          <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-semibold text-white mb-2">Something went wrong</h3>
+          <p className="text-red-400 text-lg mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors duration-200"
+          >
+            Try Again
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <section className="relative py-12 sm:py-16 lg:py-20 xl:py-24 overflow-hidden">
-      {/* Enhanced Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-slate-900 to-black">
-        <div className="absolute inset-0 bg-black/20"></div>
-
-        {/* Animated background elements */}
-        <div
-          className="absolute top-1/4 left-1/6 w-32 h-32 sm:w-48 sm:h-48 lg:w-64 lg:h-64 bg-purple-600/20 rounded-full mix-blend-multiply filter blur-xl"
-          style={{
-            animation: 'float 8s ease-in-out infinite'
-          }}
-        ></div>
-        <div
-          className="absolute bottom-1/4 right-1/6 w-40 h-40 sm:w-56 sm:h-56 lg:w-72 lg:h-72 bg-cyan-600/20 rounded-full mix-blend-multiply filter blur-xl"
-          style={{
-            animation: 'float 10s ease-in-out infinite reverse'
-          }}
-        ></div>
-
-        {/* Grid pattern */}
-        <div
-          className="absolute inset-0 opacity-10"
-          style={{
-            backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
-            backgroundSize: '25px 25px'
-          }}
-        ></div>
+    <section className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-black py-12 px-4 pt-20">
+      {/* Header Section */}
+      <div className="max-w-7xl mx-auto text-center mb-16">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-xl mb-6">
+          <User className="w-8 h-8 text-white" />
+        </div>
+        <h2 className="text-5xl font-bold text-white mb-4">Our Mentors</h2>
+        <p className="text-white/70 max-w-2xl mx-auto text-lg leading-relaxed">
+          Learn from experienced mentors across various fields of expertise. Connect with industry professionals who are passionate about sharing their knowledge and helping you succeed.
+        </p>
       </div>
 
-      <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header Section */}
-        <div
-          className={`text-center mb-8 sm:mb-12 lg:mb-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
-            }`}
-        >
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-white mb-3 sm:mb-4 lg:mb-6">
-            Meet Our Expert Mentors
-          </h2>
-          <p className="text-sm sm:text-base lg:text-lg text-white/70 max-w-xl lg:max-w-2xl mx-auto leading-relaxed px-4">
-            Learn from industry professionals who are passionate about helping you succeed in your career journey
-          </p>
-        </div>
-
-        {/* Mentors Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 max-w-7xl mx-auto">
-          {mentors.map((mentor, index) => (
-            <div
-              key={mentor.id}
-              className={`group transition-all duration-700 ${isVisible
-                  ? 'opacity-100 translate-y-0'
-                  : 'opacity-0 translate-y-12'
-                }`}
-              style={{
-                transitionDelay: `${index * 200}ms`
-              }}
-              onMouseEnter={() => setHoveredCard(mentor.id)}
-              onMouseLeave={() => setHoveredCard(null)}
-            >
-              <div className="relative bg-white/10 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 border border-white/20 h-full flex flex-col transition-all duration-500 hover:bg-white/15 hover:border-white/30 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/20">
-
-                {/* Mentor Profile */}
-                <div className="flex items-center mb-4 sm:mb-6">
-                  <div className="relative">
-                    {mentor.image ? (
-                      <img
-                        src={mentor.image}
-                        alt={mentor.name}
-                        className="w-12 h-12 sm:w-16 sm:h-16 lg:w-18 lg:h-18 rounded-full object-cover border-2 border-cyan-400 transition-all duration-300 group-hover:border-purple-400"
-                      />
-                    ) : (
-                      <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-18 lg:h-18 rounded-full bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center border-2 border-cyan-400 transition-all duration-300 group-hover:border-purple-400">
-                        <User className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-                      </div>
-                    )}
-
-                  </div>
-
-                  <div className="ml-3 sm:ml-4 flex-1">
-                    <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-cyan-400 transition-all duration-300">
-                      {mentor.name}
-                    </h3>
-                    <p className="text-cyan-400 text-sm sm:text-base font-medium">{mentor.expertise}</p>
-                  </div>
+      {/* Mentors Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+        {mentors.map((mentor) => (
+          <div
+            key={mentor.id}
+            className="group bg-white/8 border border-white/15 backdrop-blur-sm rounded-2xl p-7 hover:bg-white/12 hover:border-white/25 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/10 hover:-translate-y-1"
+          >
+            {/* Profile Section */}
+            <div className="flex items-center gap-5 mb-6">
+              {mentor.image ? (
+                <img
+                  src={mentor.image}
+                  alt={mentor.name}
+                  className="w-16 h-16 rounded-xl object-cover border-2 border-cyan-400/60 group-hover:border-cyan-400 transition-colors duration-300"
+                />
+              ) : (
+                <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center border-2 border-cyan-400/60 group-hover:border-cyan-400 transition-colors duration-300">
+                  <User className="text-white w-7 h-7" />
                 </div>
+              )}
 
-                {/* Description */}
-                <p className="text-white/60 text-xs sm:text-sm mb-4 sm:mb-6 leading-relaxed">
-                  {mentor.description}
-                </p>
+              <div className="flex-1">
+                <h3 className="text-white text-xl font-semibold mb-1 group-hover:text-cyan-100 transition-colors duration-300">
+                  {mentor.name}
+                </h3>
+                <span className="inline-block px-3 py-1 text-sm font-medium text-cyan-300 bg-cyan-500/20 rounded-full border border-cyan-400/30">
+                  {mentor.accountType}
+                </span>
+              </div>
+            </div>
 
-                {/* Stats */}
-                <div className="flex flex-wrap items-center gap-2 sm:gap-4 mb-4 sm:mb-6">
-                  <div className="flex items-center text-yellow-400">
-                    <Star className="w-3 h-3 sm:w-4 sm:h-4 fill-current" />
-                    <span className="ml-1 text-white text-xs sm:text-sm font-medium">{mentor.rating}</span>
-                  </div>
-                  <div className="flex items-center text-white/70">
-                    <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-                    <span className="text-xs sm:text-sm">{mentor.reviews} reviews</span>
-                  </div>
-                  <div className="flex items-center text-white/70">
-                    <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-                    <span className="text-xs sm:text-sm">{mentor.sessions}+ sessions</span>
-                  </div>
+            {/* Description */}
+            <div className="mb-6">
+              <p className="text-white/80 leading-relaxed group-hover:text-white/90 transition-colors duration-300">
+                {mentor.description}
+              </p>
+            </div>
+
+            {/* Expertise Section */}
+            <div className="mb-5 p-4 rounded-xl bg-gradient-to-r from-purple-500/10 to-cyan-500/10 border border-white/10">
+              <div className="flex items-center gap-2 mb-1">
+                <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                <span className="text-sm font-semibold text-purple-300">Expertise</span>
+              </div>
+              <p className="text-white font-medium">{mentor.techName}</p>
+            </div>
+
+            {/* Skills Tags */}
+            {mentor.tags.length > 0 && (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
+                  <span className="text-sm font-medium text-cyan-300">Skills</span>
                 </div>
-
-                {/* Tags */}
-                <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-4 sm:mb-6 flex-grow">
-                  {mentor.tags.map((tag, tagIndex) => (
+                <div className="flex flex-wrap gap-2">
+                  {mentor.tags.map((tag, i) => (
                     <span
-                      key={tagIndex}
-                      className={`px-2 sm:px-3 py-1 bg-white/10 rounded-full text-xs sm:text-sm text-white/70 border border-white/10 transition-all duration-300 ${hoveredCard === mentor.id
-                          ? 'bg-white/20 border-white/30 text-white'
-                          : ''
-                        }`}
-                      style={{
-                        transitionDelay: `${tagIndex * 50}ms`
-                      }}
+                      key={i}
+                      className="text-xs font-medium px-3 py-2 rounded-lg bg-purple-500/20 text-white/90 border border-purple-400/30 hover:bg-purple-500/30 hover:border-purple-400/50 transition-all duration-200"
                     >
                       {tag}
                     </span>
                   ))}
                 </div>
-
-                {/* CTA Button */}
-                <button className="w-full py-2.5 sm:py-3 lg:py-4 rounded-xl sm:rounded-2xl bg-gradient-to-r from-purple-600 to-cyan-600 text-white font-medium text-sm sm:text-base transition-all duration-300 hover:from-purple-700 hover:to-cyan-700 hover:scale-105 active:scale-95 transform hover:shadow-lg hover:shadow-purple-500/25 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:ring-offset-2 focus:ring-offset-transparent">
-                  <span className="relative z-10">Book Session</span>
-                </button>
               </div>
-            </div>
-          ))}
-        </div>
+            )}
 
-        {/* Call to Action */}
-        <div
-          className={`text-center mt-8 sm:mt-12 lg:mt-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`}
-          style={{ transitionDelay: '800ms' }}
-        >
-          <p className="text-white/60 text-xs sm:text-sm mb-4">
-            Can't find the right mentor?
-            <button className="text-purple-400 hover:text-purple-300 underline ml-1 transition-colors duration-200">
-              Browse all mentors
-            </button>
-          </p>
-          <button className="px-6 sm:px-8 py-2.5 sm:py-3 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 rounded-xl sm:rounded-2xl text-white font-medium text-sm sm:text-base transition-all duration-300 hover:scale-105">
-            View All Mentors
+            {/* Connect Button */}
+            <div className="mt-6 pt-5 border-t border-white/10">
+              <button className="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/25 group-hover:scale-[1.02]">
+                Connect with {mentor.name.split(' ')[0]}
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Bottom Call to Action */}
+      <div className="text-center mt-16">
+        <div className="max-w-xl mx-auto mb-8">
+          <h3 className="text-2xl font-bold text-white mb-3">Ready to start your journey?</h3>
+          <p className="text-white/70">Connect with our mentors and accelerate your learning today</p>
+        </div>
+        
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <button className="px-8 py-4 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25">
+            Browse All Mentors
+          </button>
+          <button className="px-8 py-4 bg-white/10 hover:bg-white/15 border border-white/20 hover:border-white/30 text-white font-medium rounded-xl transition-all duration-300 hover:scale-105">
+            Become a Mentor
           </button>
         </div>
       </div>
-
-      {/* Custom Styles */}
-      <style>{`
-        @keyframes float {
-          0%, 100% { 
-            transform: translateY(0px) rotate(0deg); 
-          }
-          50% { 
-            transform: translateY(-20px) rotate(180deg); 
-          }
-        }
-        
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes pulse {
-          0%, 100% { 
-            opacity: 1; 
-          }
-          50% { 
-            opacity: 0.5; 
-          }
-        }
-
-        /* Enhanced focus states for accessibility */
-        button:focus-visible {
-          outline: 2px solid rgba(139, 92, 246, 0.8);
-          outline-offset: 2px;
-        }
-
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-          width: 4px;
-        }
-        
-        ::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.1);
-        }
-        
-        ::-webkit-scrollbar-thumb {
-          background: rgba(139, 92, 246, 0.5);
-          border-radius: 2px;
-        }
-
-        /* Ensure proper touch targets on mobile */
-        @media (max-width: 640px) {
-          button {
-            min-height: 44px;
-          }
-        }
-
-        /* Smooth transitions for all interactive elements */
-        * {
-          transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-        }
-      `}</style>
     </section>
   );
 };

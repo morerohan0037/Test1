@@ -173,7 +173,7 @@ const Login = () => {
           animation-delay: 5000ms;
         }
       `}</style>
-            <div className="min-h-screen relative overflow-hidden flex flex-col justify-center py-8 px-4 sm:px-6 lg:px-8">
+            <div className="min-h-screen relative overflow-hidden flex flex-col justify-center py-8 px-4 sm:px-6 lg:px-8 pt-20">
                 {/* Animated Background */}
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
                     <div className="absolute inset-0 bg-black/20"></div>
@@ -194,21 +194,23 @@ const Login = () => {
 
                 {/* Content */}
                 <div className="relative z-10">
-                    <div className="sm:mx-auto sm:w-full sm:max-w-md animate-fade-in-up">
-                        {/* Logo/Brand area */}
-                        <div className="flex justify-center mb-6">
-                            <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-cyan-600 rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-all duration-300 animate-float">
-                                <Lock className="w-8 h-8 text-white" />
-                            </div>
-                        </div>
+<div className="sm:mx-auto sm:w-full sm:max-w-md animate-fade-in-up">
+  {/* Logo and Welcome Area Side-by-Side */}
+  <div className="flex items-center justify-center gap-4 mb-6 animate-fade-in-up">
+    <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-cyan-600 rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-all duration-300 animate-float">
+      <Lock className="w-8 h-8 text-white" />
+    </div>
+    <div>
+      <h2 className="text-3xl sm:text-4xl font-bold text-white mb-1">
+        Welcome back
+      </h2>
+      <p className="text-white/80 text-sm sm:text-base">
+        Sign in to your account to continue
+      </p>
+    </div>
+  </div>
+</div>
 
-                        <h2 className="text-center text-3xl sm:text-4xl font-bold text-white mb-2 animate-fade-in-up animation-delay-200">
-                            Welcome back
-                        </h2>
-                        <p className="text-center text-white/80 text-sm sm:text-base animate-fade-in-up animation-delay-400">
-                            Sign in to your account to continue
-                        </p>
-                    </div>
 
                     <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md animate-fade-in-up animation-delay-600">
                         <div className="bg-white/10 backdrop-blur-xl py-8 px-4 shadow-2xl ring-1 ring-white/20 sm:rounded-3xl sm:px-10 border border-white/20 hover:bg-white/15 transition-all duration-500">
