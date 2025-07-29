@@ -1,18 +1,32 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, BookOpen } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { isAuthenticated, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   const navigationItems = [
     { name: 'Home', to: '/' },
     { name: 'Mentors', to: '/mentors' },
     { name: 'Plans', to: '/plans' },
-    { name: 'Login', to: '/login' },
-    { name: 'Sign Up', to: '/signup' },
-    { name: 'Dashboard', to: '/dashboard' },
+    ...(!isAuthenticated
+      ? [
+          { name: 'Login', to: '/login' },
+          { name: 'Sign Up', to: '/signup' },
+        ]
+      : [
+          { name: 'Dashboard', to: '/dashboard' },
+          { name: 'Logout', onClick: handleLogout },
+        ]),
   ];
 
   return (
@@ -29,23 +43,33 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6">
-            {navigationItems.map((item, index) => (
-              <Link
-                key={index}
-                to={item.to}
-                className={`text-sm font-medium px-2 py-1 transition-all duration-300 rounded-md ${
-                  location.pathname === item.to
-                    ? 'text-white bg-white/10'
-                    : 'text-white/70 hover:text-white hover:bg-white/5'
-                } ${
-                  item.name === 'Sign Up'
-                    ? 'bg-gradient-to-r from-purple-600 to-cyan-600 px-4 py-2 rounded-lg hover:from-purple-700 hover:to-cyan-700 shadow-md shadow-purple-600/20 text-white'
-                    : ''
-                }`}
-              >
-                {item.name}
-              </Link>
-            ))}
+            {navigationItems.map((item, index) =>
+              item.onClick ? (
+                <button
+                  key={index}
+                  onClick={item.onClick}
+                  className="text-sm font-medium px-2 py-1 transition-all duration-300 rounded-md text-white/70 hover:text-white hover:bg-white/5"
+                >
+                  {item.name}
+                </button>
+              ) : (
+                <Link
+                  key={index}
+                  to={item.to}
+                  className={`text-sm font-medium px-2 py-1 transition-all duration-300 rounded-md ${
+                    location.pathname === item.to
+                      ? 'text-white bg-white/10'
+                      : 'text-white/70 hover:text-white hover:bg-white/5'
+                  } ${
+                    item.name === 'Sign Up'
+                      ? 'bg-gradient-to-r from-purple-600 to-cyan-600 px-4 py-2 rounded-lg hover:from-purple-700 hover:to-cyan-700 shadow-md shadow-purple-600/20 text-white'
+                      : ''
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              )
+            )}
           </div>
 
           {/* Mobile Menu Button */}

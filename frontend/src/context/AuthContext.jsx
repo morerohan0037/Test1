@@ -24,13 +24,17 @@ export const AuthProvider = ({ children }) => {
       const response = await fetch(`${baseUrl}/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userData)
+        body: JSON.stringify({
+          fullName: userData.name,
+          email: userData.email,
+          password: userData.password
+        })
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message);
       
       // Auto login after signup
-      const loginResponse = await fetch('/auth/login', {
+      const loginResponse = await fetch(`${baseUrl}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -89,7 +93,7 @@ export const AuthProvider = ({ children }) => {
       signup, 
       login, 
       logout,
-      isAuthenticated: !token 
+      isAuthenticated: !!token // Changed to check if token exists
     }}>
       {children}
     </AuthContext.Provider>

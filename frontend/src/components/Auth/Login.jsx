@@ -1,7 +1,13 @@
 import { useState } from 'react';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const Login = () => {
+    const { login, isLoading: authLoading, error: authError } = useAuth();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from?.pathname || '/dashboard';
     const [formData, setFormData] = useState({
         email: '',
         password: ''
@@ -12,10 +18,14 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
-        setTimeout(() => {
+        try {
+            await login(formData);
+            navigate(from, { replace: true });
+        } catch (error) {
+            console.error('Login failed:', error);
+        } finally {
             setIsLoading(false);
-            console.log('Login attempt:', formData);
-        }, 1500);
+        }
     };
 
     return (
@@ -293,6 +303,13 @@ const Login = () => {
                                         'Sign in'
                                     )}
                                 </button>
+
+                                {/* Add error message display */}
+                                {authError && (
+                                    <div className="mt-4 text-red-400 text-sm text-center">
+                                        {authError}
+                                    </div>
+                                )}
                             </div>
 
                             {/* Divider */}

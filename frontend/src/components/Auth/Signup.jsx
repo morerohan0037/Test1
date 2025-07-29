@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Signup = () => {
+  const { signup, isLoading: authLoading, error: authError } = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -13,10 +17,14 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => {
+    try {
+      await signup(formData);
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Signup failed:', error);
+    } finally {
       setIsLoading(false);
-      console.log('Signup attempt:', formData);
-    }, 1500);
+    }
   };
 
   return (
@@ -316,6 +324,13 @@ const Signup = () => {
                     'Create Account'
                   )}
                 </button>
+
+                {/* Add error message display */}
+                {authError && (
+                  <div className="mt-4 text-red-400 text-sm text-center">
+                    {authError}
+                  </div>
+                )}
               </div>
 
               {/* Divider */}
